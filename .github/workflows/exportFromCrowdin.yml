@@ -14,8 +14,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Set configuration for add-on repo
         run: |
-          sed -i'.bak' 's/\(^.*: \"\)\(repo\/\)\(.*$\)/\1${{ github.event.inputs.repo }}\/\3/' crowdin.yml
-          sed -i'.bak' 's/\(^.*\/\)\(repo.po\)\(.*$\)/\1${{ github.event.inputs.repo }}.po\3/' crowdin.yml
+          sed -i'.bak' 's/\(^.*: \"\)\(repo\/\)\(.*$\)/\1${{ github.event.repository.name }}\/\3/' crowdin.yml
+          sed -i'.bak' 's/\(^.*\/\)\(repo.po\)\(.*$\)/\1${{ github.event.repository.name }}.po\3/' crowdin.yml
 
       #- name: Commit and push
         #run: |
