@@ -48,7 +48,7 @@ jobs:
           upload_translations: false
           download_translations: true
           source: ${{ github.event.repository.name }}.pot
-          translation: ${{ github.event.repository.name }}/locale/%two_leters_code%/nvda.po
+          translation: ${{ github.event.repository.name }}/locale/%two_letters_code%/nvda.po
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CROWDIN_PROJECT_ID: ${{ vars.CROWDIN_ID }}
