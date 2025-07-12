@@ -1,23 +1,35 @@
-name: Export from Crowdin
+name: Export to crowdin
 
 on:
   workflow_dispatch:
-
 jobs:
-  exportFromCrowdin:
+  exportToCrowdin:
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     steps:
-      - name: Checkout Crowdin
+      - name: Checkout main branch
         uses: actions/checkout@v4
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
         with:
-          repository: nvdaaddons/crowdinRegistration
-      - name: Set configuration for add-on repo
+          python-version: 3.11
+
+      - name: Install dependencies
         run: |
-          sed -i'.bak' 's/\(^.*: \"\)\(repo\/\)\(.*$\)/\1\*\*\/\3/' crowdin.yml
-          sed -i'.bak' 's/\(^.*\/\)\(repo.po\)\(.*$\)/\1$\*\*.po\3/' crowdin.yml
+          pip install scons markdown
+          sudo apt update
+          sudo apt install gettext
+          sudo apt install translate-toolkit
+      - name: Create add-on
+        run: |
+          scons
+      - name: Create pot file
+        run: |
+          scons pot
+      - name: Convert markdown to pot
+        run: md2po -P readme.md 
 
 
       #- name: Commit and push
@@ -29,13 +41,14 @@ jobs:
           #git branch -u origin/main
           #git pull
           #git push
-      - name: Crowdin download
+      - name: Crowdin upload
         uses: crowdin/github-action@v2
         with:
           upload_sources: false
           upload_translations: false
           download_translations: true
-          auto_approve_imported: true
+          source: ${{ github.event.repository.name }}.pot
+          translation: ${{ github.event.repository.name }}/locale/%two_leters_code%/nvda.po
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CROWDIN_PROJECT_ID: ${{ vars.CROWDIN_ID }}
