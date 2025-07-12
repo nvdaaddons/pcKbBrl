@@ -10,13 +10,15 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout main branch
-        uses: actions/checkout@v4
-      - name: Checkout Crowdin repo
+      - name: Checkout Crowdin
         uses: actions/checkout@v4
         with:
           repository: nvdaaddons/crowdinRegistration
-          path: crowdin
+      - name: Set configuration for add-on repo
+        run: |
+          sed -i'.bak' 's/\(^.*: \"\)\(repo\/\)\(.*$\)/\1${{ github.event.repository.name }}\/\3/' crowdin.yml
+          sed -i'.bak' 's/\(^.*\/\)\(repo.po\)\(.*$\)/\1${{ github.event.repository.name }}.po\3/' crowdin.yml
+
 
       #- name: Commit and push
         #run: |
@@ -30,8 +32,6 @@ jobs:
       - name: Crowdin download
         uses: crowdin/github-action@v2
         with:
-          source: 'pcKbBrl/*.pot'
-          translation: 'pcKbBrl/**/*.po'
           upload_sources: false
           upload_translations: false
           download_translations: true
